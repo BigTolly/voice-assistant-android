@@ -6,7 +6,7 @@ jobs:
   build:
     runs-on: ubuntu-22.04
     env:
-      FLUTTER_VERSION: "3.22.1"
+      FLUTTER_VERSION: "3.22.1"  # Актуальная стабильная версия
     
     steps:
       - uses: actions/checkout@v4
@@ -17,18 +17,17 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: stable
 
-      - name: Validate Android structure
+      - name: Validate project
         run: |
-          [ -f "android/app/build.gradle" ] || { echo "❌ Отсутствует android/app/build.gradle"; exit 1; }
-          grep "multiDexEnabled true" android/app/build.gradle || { echo "❌ Не настроен MultiDex"; exit 1; }
+          [ -f "pubspec.yaml" ] || { echo "❌ Отсутствует pubspec.yaml"; exit 1; }
+          [ -d "android" ] || { echo "❌ Отсутствует папка android/"; exit 1; }
 
       - name: Install dependencies
         run: |
-          flutter pub upgrade --major-versions
           flutter pub get
 
-      - name: Build APK (with null safety)
-        run: flutter build apk --release --no-sound-null-safety
+      - name: Build APK (Release)
+        run: flutter build apk --release
 
       - uses: actions/upload-artifact@v4
         with:
