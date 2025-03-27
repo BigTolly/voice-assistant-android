@@ -4,13 +4,40 @@ on: [push]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04  # Более стабильная версия Ubuntu
     steps:
       - uses: actions/checkout@v4
+
+      # Проверка наличия Android-структуры (должно быть ДО сборки)
+      - name: Validate Android structure
+        run: |
+          echo "Проверяем структуру проекта..."
+          [ -d "android/app" ] || { echo "❌ Папка android/app отсутствует"; exit 1; }
+          [ -f "android/app/build.gradle" ] || { echo "❌ Файл android/app/build.gradle отсутствует"; exit 1; }
+          echo "✅ Структура Android верна"
+
+      # Настройка Flutter
       - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.19.5'  # Стабильная версия Flutter
+          channel: 'stable'
+
+      # Кеширование зависимостей для ускорения сборки
+      - name: Cache Flutter dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            /opt/hostedtoolcache/flutter
+            ~/.pub-cache
+          key: flutter-${{ runner.os }}-${{ hashFiles('pubspec.yaml') }}
+
+      # Установка зависимостей и сборка
       - run: flutter pub get
-      - run: flutter build apk --release
+      - run: flutter build apk --release --no-tree-shake-icons
+
+      # Загрузка собранного APK
       - uses: actions/upload-artifact@v4
         with:
           name: app-release
           path: build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 1  # Автоудаление через 1 день (можно увеличить)
