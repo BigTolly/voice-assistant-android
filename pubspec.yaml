@@ -1,0 +1,15 @@
+name: voice_assistant_android  
+description: "Голосовой ассистент для Android"  
+
+environment:  
+  sdk: ">=3.0.0 <4.0.0"  
+
+dependencies:  
+  flutter:  
+    sdk: flutter  
+  record: ^4.0.0  
+  http: ^0.13.5  
+  audioplayers: ^4.0.1  
+
+flutter:  
+  uses-material-design: true  
