@@ -1,8 +1,0 @@
-build_apk:  
-  image: cirrusci/flutter:stable  
-  script:  
-    - flutter pub get  
-    - flutter build apk --release  
-  artifacts:  
-    paths:  
-      - build/app/outputs/flutter-apk/app-release.apk
